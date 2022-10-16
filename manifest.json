@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "HeroZimplified",
 	"version": "0.4",
-	"description": "Gives you information about the best available missions and trainings in Hero Zero",
+	"description": "Gives you information about the best available missions and workouts in Hero Zero",
 	"homepage_url": "https://github.com/mayiflex/HeroZimplified",
 	"icons": {
 		"32" : "pretty/viegoavatar.png"

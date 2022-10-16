@@ -102,7 +102,7 @@ class Reward {
 						  this.flexStats + other.flexStats, this.exp + other.exp, this.mainStats + other.mainStats);
 	}
 	divBy(div) {
-		return new Reward(parseFloat((this.coins/div).toFixed(2)), parseFloat((this.honor/div).toFixed(2)), this.item, parseFloat((this.premium/div).toFixed(2)), parseFloat((this.flexStats/div).toFixed(2)), parseFloat((this.exp/div).toFixed(2)), parseFloat((this.mainStats/div)).toFixed(2))
+		return new Reward(parseFloat((this.coins/div).toFixed(2)), parseFloat((this.honor/div).toFixed(2)), this.item, parseFloat((this.premium).toFixed(2)), parseFloat((this.flexStats/div).toFixed(2)), parseFloat((this.exp/div*2).toFixed(2)), parseFloat((this.mainStats/div)).toFixed(2))
 	}
 }
 //stores given key under value, unix time epoch under key+"_ts" and the "latestUpdate" timestamp

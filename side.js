@@ -4,6 +4,7 @@ let sectionIndx = 0;
 let lastUpdate = 0;
 let hasContent = false;
 
+
 async function getLastChangedSectionIndexIfUpdated() {
 	let latestUpdate = (await browser.storage.local.get("latestUpdate")).latestUpdate
 	if(latestUpdate <= lastUpdate) {
@@ -27,6 +28,7 @@ async function getLastChangedSectionIndexIfUpdated() {
 			return i;
 		}
 	}
+	
 	return sectionIndx;
 }
 
@@ -92,3 +94,4 @@ browser.windows.getCurrent({populate: true}).then((windowInfo) => {
   myWindowId = windowInfo.id;
 }); 
 browser.storage.local.onChanged.addListener(updateSidePage);
+updateSidePage();
