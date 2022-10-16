@@ -1,0 +1,25 @@
+{
+	"manifest_version": 2,
+	"name": "HeroZimplified",
+	"version": "0.4",
+	"description": "Gives you information about the best available missions and trainings in Hero Zero",
+	"homepage_url": "https://github.com/mayiflex/HeroZimplified",
+	"icons": {
+		"32" : "pretty/viegoavatar.png"
+	},
+	"permissions": [
+		"webRequest", "webRequestBlocking", "storage", "tabs", "https://*.herozerogame.com/*"
+	],
+	"background": {
+		"scripts": ["background.js"]
+	},
+	"sidebar_action": {
+		"default_icon": "pretty/viegoavatar.png",
+		"default_title" : "HeroZimplified",
+		"default_panel": "pretty/side.html"
+	},
+	"page_action": {
+		"default_icon": "pretty/viegoavatar.png",
+		"default_title": "HeroZimplified"
+	}
+}
