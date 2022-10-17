@@ -5,7 +5,7 @@ A Firefox addon for Hero Zero that shows you every mission/workout as a table in
 
 # Installation
 
-![1. Download the pre-release alpha](https://github.com/mayiflex/HeroZimplified/releases/tag/alpha)
+1. ![Download the pre-release alpha](https://github.com/mayiflex/HeroZimplified/releases/tag/alpha)
 2. Extract the .zip
 3. In firefox in the address bar enter about:debugging
 4. Swap to the Firefox tab on the left
