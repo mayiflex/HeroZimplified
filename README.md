@@ -13,5 +13,5 @@ A Firefox addon for Hero Zero that shows you every mission/workout as a table in
 5. Click "Load Temporary Add-on..."
 <img src="/readme/aboutdebugging.png">
 6. Choose the manifest.json from the extracted zip
-
+<br/><br/>
 Since this is just a pre-release alpha, so you can enjoy HeroZimplified during the double exp event, you have to redo steps 3 to 6 every time you restart your Firefox.
