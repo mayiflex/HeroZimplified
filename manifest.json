@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "HeroZimplified",
-	"version": "0.4",
+	"version": "0.5",
 	"description": "Gives you information about the best available missions and workouts in Hero Zero",
 	"homepage_url": "https://github.com/mayiflex/HeroZimplified",
 	"browser_specific_settings": {
@@ -9,23 +9,17 @@
 			"strict_min_version": "57.0a1"
 		}
 	},
-  
 	"icons": {
-		"32" : "pretty/denodonut.png"
+		"32" : "pretty/icons/denodonut.png"
 	},
 	"permissions": [
 		"webRequest", "webRequestBlocking", "storage", "tabs", "https://*.herozerogame.com/*"
 	],
 	"background": {
-		"scripts": ["background.js"]
-	},
-	"sidebar_action": {
-		"default_icon": "pretty/denodonut.png",
-		"default_title" : "HeroZimplified",
-		"default_panel": "pretty/side.html"
+		"scripts": ["pack/background.js"]
 	},
 	"page_action": {
-		"default_icon": "pretty/denodonut.png",
+		"default_icon": "pretty/icons/denodonut.png",
 		"default_title": "HeroZimplified"
 	}
 }
