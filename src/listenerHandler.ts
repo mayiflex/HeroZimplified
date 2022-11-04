@@ -3,6 +3,7 @@
 import browser from "../../../../node_modules/webextension-polyfill/dist/browser-polyfill.js"
 import Mission from "./cs/Mission.ts";
 import Workout from "./cs/Workout.ts";
+import Character from "./cs/Character.ts";
 import Item from "./cs/Item.ts";
 
 function requestListener(details: any) {
@@ -20,6 +21,11 @@ function requestListener(details: any) {
 		try {
 			const hzdata = JSON.parse(responses.join(''));
 			console.log(hzdata);
+			if(hzdata.data.character != null) {
+				console.log("setting character");
+				Character.SetAll(hzdata.data.character, hzdata.data.user.premium_currency);
+				console.log(Character);
+			}
 			if(hzdata.data.items != null) {
 				console.log("setting items")
 				Item.SetAll(hzdata.data.items);

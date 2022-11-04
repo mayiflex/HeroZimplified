@@ -16,7 +16,7 @@
 		"webRequest", "webRequestBlocking", "storage", "tabs", "https://*.herozerogame.com/*"
 	],
 	"background": {
-		"scripts": ["pack/background.js"]
+		"scripts": ["release/background.js"]
 	},
 	"page_action": {
 		"default_icon": "pretty/icons/denodonut.png",

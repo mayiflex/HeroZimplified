@@ -1,9 +1,11 @@
 // deno-lint-ignore-file no-explicit-any
+// @deno-types="../../../../../node_modules/@types/webextension-polyfill/index.d.ts"
+import browser from "../../../../../node_modules/webextension-polyfill/dist/browser-polyfill.js"
 import Rewards from "./Rewards.ts";
 
 export default class Workout {
 	public static All: Workout[];
-	public static LastUpdate: number;
+	public static LastUpdate = 0;
 
 	public StatType: number;
 	public Cost: number;
@@ -22,14 +24,14 @@ export default class Workout {
 		this.StatType = train.stat_type;
 	}
 
-	public static UnboxAll() {
-		const data = localStorage.getItem("workouts")
+	public static async UnboxAll() {
+		console.log("Unboxing Workouts")
+		const data = (await browser.storage.local.get("workouts")).workouts;
+		console.log(data);
 		if(data == null) return;
-		Workout.All = JSON.parse(data);
-		console.log("Unboxing")
-		console.log(Workout.All)
+		Workout.All = data;
 	}
-	public static StoreAll(workouts: any) {
+	public static async StoreAll(workouts: any) {
 		//fixing their cringe json
 		for(let i = 0; i < workouts.length; i++) {
 			workouts[i].rewards_star_1 = JSON.parse(workouts[i].rewards_star_1.split('\\').join(''))
@@ -38,29 +40,12 @@ export default class Workout {
 		}
 		
 		const uxEpoch = Math.round(Date.now() / 1000);
-		const Ws = new Array<Workout>(workouts.length)
+		Workout.All = new Array<Workout>(workouts.length);
 		for(let i = 0; i < workouts.length; i++) {
-			Ws[i] = new Workout(workouts[i]);
+			Workout.All[i] = new Workout(workouts[i]);
 		}
-		Ws.sort((a: Workout, b: Workout) => (b.RewardsPerCost.MainStats + b.RewardsPerCost.FlexStats) - (a.RewardsPerCost.MainStats + a.RewardsPerCost.FlexStats));
-		localStorage.setItem("workouts", JSON.stringify(Workout.All))
-		dispatchEvent(new Event("workoutUpdate"));
-		localStorage.setItem("latestUpdate", uxEpoch.toString());
-		dispatchEvent(new Event("storageUpdate"));
-		console.log(Ws)
+		Workout.All = Workout.All.sort((a: Workout, b: Workout) => (b.RewardsPerCost.MainStats + b.RewardsPerCost.FlexStats) - (a.RewardsPerCost.MainStats + a.RewardsPerCost.FlexStats));
+		browser.storage.local.set( {"workouts" : Workout.All});
+		await browser.storage.local.set( {"latestUpdate" : uxEpoch.toString() });
 	}
 }
-
-/*switch(train.stat_type) {
-			case 1:
-				this.statType = "Kondition";
-				break;
-			case 2:
-				this.statType = "Kraft";
-				break;
-			case 3:
-				this.statType = "Grips";
-				break;
-			case 4:
-				this.statType = "Intuition"; 
-*/

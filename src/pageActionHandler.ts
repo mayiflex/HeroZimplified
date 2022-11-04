@@ -22,7 +22,3 @@ export default function StartPageActionHandler() {
     browser.tabs.onUpdated.addListener(pageActionVisibility);
 	browser.pageAction.onClicked.addListener(openMainWindow);
 }
-
-/*import { createRequire } from "https://deno.land/std/node/module.ts";
-const require = createRequire(import.meta.url);
-const browser = require("webextension-polyfill");*/

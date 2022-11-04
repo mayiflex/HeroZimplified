@@ -1,92 +1,108 @@
+// @deno-types="../../../../node_modules/@types/webextension-polyfill/index.d.ts"
+import browser from "../../../../node_modules/webextension-polyfill/dist/browser-polyfill.js"
 import Mission from "./cs/Mission.ts";
 import Workout from "./cs/Workout.ts";
-const contentBox = document.querySelector("flex");
+import Settings from "./cs/Settings.ts"
+import Language from "./cs/Language.ts";
+import { Section } from "./enums/Section.ts";
+
+const contentBox = document.querySelector("#flex");
 const sections = ["Missions", "Trainings"]
-let sectionIndx = 0;
+let settings: Settings | undefined = undefined;
+let language: Language | undefined = undefined;
+let sectionIndex = 0;
 let lastUpdate = 0;
 
-function getLastChangedSectionIndexIfUpdated() {
-	let latestUpdate: string | number | null = localStorage.getItem("latestUpdate");
-	if(latestUpdate == null) return sectionIndx;
-	latestUpdate = parseInt(latestUpdate);
 
-	if(latestUpdate <= lastUpdate) {
-		return sectionIndx;
+async function updateSectionIndex() {
+	const latestUpdate = await unboxLatestUpdate()
+	if(latestUpdate > Workout.LastUpdate) {
+		await Workout.UnboxAll();
+		Workout.LastUpdate = latestUpdate;
+		sectionIndex = Section.Workouts;
+		lastUpdate = latestUpdate
 	}
-
-	lastUpdate = latestUpdate;
-	if(Mission.LastUpdate == latestUpdate) {
-		return 0;
-	} else {
-		return 1;
+	if(latestUpdate > Mission.LastUpdate) { 
+		await Mission.UnboxAll();
+		Mission.LastUpdate = latestUpdate;
+		sectionIndex = Section.Missions;
+		lastUpdate = latestUpdate
 	}
 }
+async function doesNeedUpdate() : Promise<boolean> { 
+	if(await unboxLatestUpdate() > lastUpdate) return true;
+	return false;
+}
+async function unboxLatestUpdate() : Promise<number> {
+	const lastUpdateStr = (await browser.storage.local.get("latestUpdate")).latestUpdate;
+	if(lastUpdateStr == null) return 0;
+	return parseInt(lastUpdateStr);
+}
 
-function updateSidePage() {
+async function updateSidePage() {
+	if(language == undefined || settings == undefined) return;
 	console.log("updating")
-	sectionIndx = getLastChangedSectionIndexIfUpdated();
-
-	let latestUpdate: string | number | null = localStorage.getItem("latestUpdate");
-	if(latestUpdate == null) return;
-	latestUpdate = parseInt(latestUpdate);
-	lastUpdate = latestUpdate > lastUpdate ? latestUpdate : lastUpdate;
-
-	let side = new Array<string>();
-	try {
-	switch(sectionIndx) {
-		case 0: {
-			side.push(`<table class="styled-table"><thead><tr><th align="right">Zone</th><th>#</th><th>Energycost</th><th>Item</th><th>Exp</th><th>Coins</th></tr></thead>`);
-			const m = Mission.All;
-			console.log(m)
-			for(let i = 0; i < m.length; i++) {
-				side.push(`<tbody><tr>
-				<th align="right">${m[i].Location}</th>
-				<th>${m[i].Position}</th>
-				<th align="right">${m[i].Cost}</th>
-				<th>${m[i].RewardsPerCost.Item}</th>
-				<th>${m[i].RewardsPerCost.Exp}</th>
-				<th>${m[i].RewardsPerCost.Coins}</th>
-				</tr></tbody>`);
-			}
-			break;
-		}
-		case 1: {
-			side.push("<table class=\"styled-table\"><thead><tr><th>Type</th><th>Cost</th><th>Item</th><th>Exp</th><th>Coins</th><th>Main</th><th>Flex</th><th>Donuts</th></tr></thead>");
-			const w = Workout.All;
-			for(let i = 0; i < w.length; i++) {
-				side.push(`<tbody><tr>
-				<th>${w[i].StatType}</th>
-				<th align="right">${w[i].Cost}</th>
-				<th>${w[i].RewardsPerCost.Item}</th>
-				<th>${w[i].RewardsPerCost.Exp}</th>
-				<th>${w[i].RewardsPerCost.Coins}</th>
-				<th>${w[i].RewardsPerCost.MainStats}</th>
-				<th>${w[i].RewardsPerCost.FlexStats}</th>
-				<th>${w[i].RewardsPerCost.Donuts}</th>
-				</tr></tbody>`);
-			}
-			break;
-		}
+	if(await doesNeedUpdate()) {
+		await updateSectionIndex();
 	}
-	side.push("</table></div>");
+
+	const table = new Array<string>();
+	try {
+		switch(sectionIndex) {
+			case Section.Missions: {
+				table.push(`<table class="styled-table"><thead><tr><th># Zone</th><th>Energycost</th><th>Item</th><th>Exp</th><th>Coins</th></tr></thead>`);
+				const m = Mission.All;
+				const zoneNames = language.Text[Section.Missions];
+				for(let i = 0; i < m.length; i++) {
+					table.push(`<tbody><tr>
+					<th class="right">${settings.IdentifierSet[m[i].Position]} ${zoneNames[m[i].Zone]}</th>
+					<th>${m[i].Cost}</th>
+					<th>${m[i].Rewards.Item == null ? "Nein" : "Ja"}</th>
+					<th>${m[i].RewardsPerCost.Exp.toFixed(2)}</th>
+					<th>${m[i].RewardsPerCost.Coins.toFixed(2)}</th>
+					</tr></tbody>`);
+				}
+				break;
+			}
+			case Section.Workouts: {
+				table.push(`<table class=\"styled-table\"><thead><tr><th>Type</th><th>Cost</th><th>Item</th><th>Exp</th><th>Coins</th><th>Main</th><th>Flex</th><th>Donuts</th></tr></thead>`);
+				const w = Workout.All;
+				const skillNames = language.Text[Section.Workouts];
+				for(let i = 0; i < w.length; i++) {
+					table.push(`<tbody><tr>
+					<th>${skillNames[w[i].StatType]}</th>
+					<th>${w[i].Cost}</th>
+					<th>${w[i].Rewards.Item == null ? "Nein" : "Ja"}</th>
+					<th>${w[i].RewardsPerCost.Exp.toFixed(2)}</th>
+					<th>${w[i].RewardsPerCost.Coins.toFixed(2)}</th>
+					<th>${w[i].RewardsPerCost.MainStats.toFixed(2)}</th>
+					<th>${w[i].RewardsPerCost.FlexStats.toFixed(2)}</th>
+					<th>${w[i].Rewards.Donuts}</th>
+					</tr></tbody>`);
+				}
+				break;
+			}
+		}
+		table.push("</table></div>");
 	} catch (ex) { 
 		console.log(ex)
 	}
-	console.log(contentBox);
-	console.log(side);
 	if(contentBox != null) {
-		contentBox.innerHTML = side.join('');
+		contentBox.innerHTML = table.join('');
+		contentBox.id = "noflex";
 	}
 }
+
+async function Init() {
+	settings = (await Settings.Load());
+	language = new Language(settings.Language)
+}
+Init();
+
 self.addEventListener("click", () => {
-	console.log("clicking mainpage")
-	sectionIndx++;
-	if(sectionIndx >= sections.length) sectionIndx = 0;
+	sectionIndex++;
+	if(sectionIndex >= sections.length) sectionIndex = 0;
 	updateSidePage();
 });
-self.addEventListener()
-const updateSidePageEvent = () => updateSidePage();
-addEventListener('storageUpdate', updateSidePageEvent);
-addEventListener('missionUpdate', Mission.UnboxAll);
-addEventListener('workoutUpdate', Workout.UnboxAll);
-updateSidePage();
+
+browser.storage.local.onChanged.addListener(updateSidePage);

@@ -24,6 +24,6 @@ export default class Rewards {
 						   this.Item != null ? this.Item : other.Item);
 	}
 	divBy(div: number) {
-		return new Rewards(this.Donuts/div, this.Coins/div, this.Exp/div, this.MainStats/div, this.FlexStats/div, this.Honor/div, this.Item)
+		return new Rewards(this.Donuts/div, this.Coins/div, this.Exp/div, this.MainStats/div, this.FlexStats/div, this.Honor/div, this.Item != null ? this.Item.divBy(div) : null)
 	}
 }
